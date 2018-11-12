@@ -32,7 +32,9 @@ jobs:
           at: ~/qlik-variable-input
       - run:
           name: Install GHR
-          command: ./.circleci/install-ghr.sh
+          command: |
+            sudo chmod +x ./.circleci/install-ghr.sh
+            ./.circleci/install-ghr.sh
       - run:
           name: Create github release
           command: |
