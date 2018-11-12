@@ -1,11 +1,11 @@
 {
-  "name": "Variable",
-  "version": "5.2.3",
-  "description": "Variable extension",
+  "name": "Variable input",
+  "version": "6.0.1",
+  "description": "An extensions that assigns a value to a variable.",
   "keywords": [
     "qliksense extension"
   ],
-  "main": "variable.js",
+  "main": "qlik-variable-input.js",
   "private": true,
   "homepage": "https://github.com/erikwett/qsVariable",
   "bugs": "https://github.com/erikwett/qsVariable/issues",
@@ -25,9 +25,11 @@
     "gulp-ignore": "^2.0.1",
     "gulp-less": "^3.0.3",
     "gulp-replace": "^0.5.4",
+    "gulp-uglify": "^3.0.1",
     "gulp-util": "^3.0.7",
     "gulp-zip": "^3.0.2",
     "less-plugin-autoprefix": "^1.5.1",
-    "requirejs": "^2.1.22"
+    "requirejs": "^2.1.22",
+    "requirejs-text": "^2.0.15"
   }
 }

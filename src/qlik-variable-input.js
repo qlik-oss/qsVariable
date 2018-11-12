@@ -1,22 +1,36 @@
-/*global define*/
-define(['qlik', './util', './properties', './style'], function (qlik, util, prop) {
+/**
+ * @license
+ * Copyright (c) 2015 Erik Wetterberg. All rights reserved.
+ * 
+ * Copyrights licensed under the terms of the MIT license.
+ * Original source <https://github.com/erikwett/qsVariable>
+ */
+define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, util, prop, css) {
 	'use strict';
-
+	$('<style>').html(css).appendTo('head');
 	function calcPercent(el) {
 		return (el.value - el.min) * 100 / (el.max - el.min);
 	}
-
 	function setVariableValue(ext, name, value) {
 		var app = qlik.currApp(ext);
-		// work-around for Qlik Sense 3.2 Bug: 
-		// currApp with param returns invalid app object
-		//enable if you are using 3.2 and extension does not work
-		//if (app.model.constructor.name !== 'App') {
-		//	app = qlik.currApp();
-		//}
-		app.variable.setContent(name, value);
+		app.variable.setStringValue(name, value);
 	}
-
+	function getVariableValue(layout) {
+		var T = typeof layout.variableValue;
+		if (T == 'object' || T == 'undefined') {
+			return '';
+		} else {
+			return layout.variableValue;
+		}
+	}
+	function getNumber(value, defaultVal) {
+		var T = parseFloat(value);
+		if (isNaN(T)) {
+			return defaultVal;
+		} else {
+			return T;
+		}
+	}
 	function getClass(style, type, selected) {
 		switch (style) {
 			case 'material':
@@ -25,48 +39,55 @@ define(['qlik', './util', './properties', './style'], function (qlik, util, prop
 					return 'selected';
 				}
 				break;
+
 			default:
 				switch (type) {
 					case 'button':
-						return selected ? 'qui-button-selected lui-button lui-button--success' : 'qui-button lui-button';
+						var Def = 'lui-button ';
+						return Def + (selected ? ' lui-active' : '');
 					case 'select':
 						return 'qui-select lui-select';
 					case 'input':
 						return 'qui-input lui-input';
+					case 'button_text':
+						return 'lui-button__text item-title';
 				}
+				break;
 		}
 	}
-
 	function getWidth(layout) {
 		if (layout.render === 'l') {
 			return '98%';
-		}
-		if (layout.width === 'custom') {
-			return layout.customwidth;
-		}
-		if (layout.width === 'fill') {
-			if (layout.render !== 'b') {
+		} else if (layout.render === 'b') {
+			if (layout.buttonMode === 'colfill') {
 				return '100%';
+			} else {
+				var len = Math.max(1, getAlternativesCount(layout));
+				return 'calc( ' + 100 / len + '% - 3px)';
 			}
-			return 'calc( ' + 100 / layout.alternatives.length + '% - 3px)';
+		} else {
+			return '100%';
 		}
 	}
-
-	function setLabel(slider, vert) {
+	function setLabel(slider) {
 		if (slider.label) {
-			if (vert) {
-				slider.label.style.bottom = calcPercent(slider) + '%';
-			} else {
-				slider.label.style.left = calcPercent(slider) + '%';
+			{
+				var T = $(slider.label).outerWidth();
+				var S = $(slider.label.parentElement).width();
+				var Offset = 100 * (T / S);
+				var Cal = calcPercent(slider);
+				if (Cal + Offset > 104) {
+					Cal = 104 - Offset;
+				}
+				slider.label.style.left = Cal + '%';
 			}
 			slider.label.textContent = slider.value;
 		} else {
 			slider.title = slider.value;
 		}
 	}
-
 	function getAlternatives(text) {
-		return text.split('|').map(function (item) {
+		return text.split('|').map(function(item) {
 			var arr = item.split('~');
 			return {
 				value: arr[0],
@@ -74,24 +95,28 @@ define(['qlik', './util', './properties', './style'], function (qlik, util, prop
 			};
 		});
 	}
-
+	function getAlternativesCount(layout) {
+		var Tmp = layout.valueType === 'd' ? getAlternatives(layout.dynamicvalues) : layout.alternatives;
+		return Tmp.length;
+	}
 	function showValue(element, layout) {
-		// find elements
 		var elements = element.querySelectorAll('input, button, option');
-
 		for (var index = 0; index < elements.length; index++) {
 			var el = elements[index];
 			switch (el.tagName) {
 				case 'INPUT':
-					el.value = layout.variableValue;
-					setLabel(el, layout.vert);
+					el.value = getVariableValue(layout);
+					setLabel(el);
 					break;
+
 				case 'OPTION':
-					el.selected = (el.value === layout.variableValue);
+					el.selected = el.value === layout.variableValue;
 					break;
+
 				case 'BUTTON':
 					el.className = getClass(layout.style, 'button', el.dataset.value === layout.variableValue);
 					break;
+
 				default:
 					console.log('showValue', el);
 			}
@@ -101,7 +126,7 @@ define(['qlik', './util', './properties', './style'], function (qlik, util, prop
 		initialProperties: prop.initialProperties,
 		definition: prop.definition,
 		support: prop.support,
-		paint: function ($element, layout) {
+		paint: function($element, layout) {
 			if (layout.thinHeader) {
 				$element.closest('.qv-object-variable').addClass('thin-header');
 			} else {
@@ -112,18 +137,13 @@ define(['qlik', './util', './properties', './style'], function (qlik, util, prop
 				return qlik.Promise.resolve();
 			}
 			this.oldSetup = prop.cloneSetup(layout);
-			var wrapper = util.createElement('div', layout.style || 'qlik'),
-				width = getWidth(layout),
-				alternatives = layout.valueType === 'd' ? getAlternatives(layout.dynamicvalues) : layout.alternatives,
-				ext = this;
-			if (layout.vert) {
-				wrapper.classList.add('vert');
-			}
+			var wrapper = util.createElement('div', layout.style || 'qlik'), width = getWidth(layout), alternatives = layout.valueType === 'd' ? getAlternatives(layout.dynamicvalues) : layout.alternatives, ext = this;
 			if (layout.render === 'b') {
-				alternatives.forEach(function (alt) {
-					var btn = util.createElement('button', getClass(layout.style, 'button',
-						alt.value === layout.variableValue), alt.label);
-					btn.onclick = function () {
+				alternatives.forEach(function(alt) {
+					var btn = util.createElement('button', getClass(layout.style, 'button', alt.value === layout.variableValue), '');
+					var txtSpan = util.createElement('span', getClass(layout.style, 'button_text', false), alt.label);
+					btn.appendChild(txtSpan);
+					btn.onclick = function() {
 						setVariableValue(ext, layout.variableName, alt.value);
 					};
 					btn.dataset.value = alt.value;
@@ -133,36 +153,38 @@ define(['qlik', './util', './properties', './style'], function (qlik, util, prop
 			} else if (layout.render === 's') {
 				var sel = util.createElement('select', getClass(layout.style, 'select'));
 				sel.style.width = width;
-				alternatives.forEach(function (alt) {
+				alternatives.forEach(function(alt) {
 					var opt = util.createElement('option', undefined, alt.label);
 					opt.value = alt.value;
 					opt.selected = alt.value === layout.variableValue;
 					sel.appendChild(opt);
 				});
-				sel.onchange = function () {
+				sel.onchange = function() {
 					setVariableValue(ext, layout.variableName, this.value);
 				};
 				wrapper.appendChild(sel);
 			} else if (layout.render === 'l') {
 				var range = util.createElement('input');
-				if (layout.vert) {
-					range.style.width = $element.height() + 'px';
-					range.style.left = '-' + (($element.height() - $element.width()) / 2) + 'px';
-				} else {
-					range.style.width = width;
-				}
+				range.style.width = width;
 				range.type = 'range';
-				range.min = layout.min || 0;
-				range.max = layout.max || 100;
-				range.step = layout.step || 1;
+				var Min = getNumber(layout.min, 0);
+				var Max = getNumber(layout.max, 100);
+				var Step = Math.abs(getNumber(layout.step, 1));
+				if (Min > Max) {
+					var T = Max;
+					Max = Min;
+					Min = T;
+				}
+				range.min = Min;
+				range.max = Max;
+				range.step = Step;
 				range.value = layout.variableValue;
-				//range.style.width = '98%';
-				range.onchange = function () {
-					setLabel(this, layout.vert);
+				range.onchange = function() {
+					setLabel(this);
 					setVariableValue(ext, layout.variableName, this.value);
 				};
-				range.oninput = function () {
-					setLabel(this, layout.vert);
+				range.oninput = function() {
+					setLabel(this);
 					if (layout.updateondrag) {
 						setVariableValue(ext, layout.variableName, this.value);
 					}
@@ -174,13 +196,13 @@ define(['qlik', './util', './properties', './style'], function (qlik, util, prop
 					labelwrap.appendChild(range.label);
 					wrapper.appendChild(labelwrap);
 				}
-				setLabel(range, layout.vert);
+				setLabel(range);
 			} else {
 				var fld = util.createElement('input', getClass(layout.style, 'input'));
 				fld.style.width = width;
 				fld.type = 'text';
-				fld.value = layout.variableValue;
-				fld.onchange = function () {
+				fld.value = getVariableValue(layout);
+				fld.onchange = function() {
 					setVariableValue(ext, layout.variableName, this.value);
 				};
 				wrapper.appendChild(fld);
@@ -189,5 +211,4 @@ define(['qlik', './util', './properties', './style'], function (qlik, util, prop
 			return qlik.Promise.resolve();
 		}
 	};
-
 });

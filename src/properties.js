@@ -32,10 +32,9 @@ define(['qlik'], function (qlik) {
 			layout.max,
 			layout.step,
 			layout.style,
-			layout.width,
-			layout.customwidth,
-			layout.vert,
-			layout.updateondrag
+			layout.buttonMode,
+			layout.updateondrag,
+			layout.rangelabel
 		]);
 	}
 
@@ -60,8 +59,7 @@ define(['qlik'], function (qlik) {
 			max: 100,
 			step: 1,
 			style: 'qlik',
-			width: '',
-			customwidth: '',
+			buttonMode: 'rowfill',
 			updateondrag: false
 		},
 		definition: {
@@ -104,63 +102,29 @@ define(['qlik'], function (qlik) {
 										label: 'Drop down'
 									}, {
 										value: 'f',
-										label: 'Input Field'
+										label: 'Input box'
 									}, {
 										value: 'l',
 										label: 'Slider'
 									}],
 									defaultValue: 'f'
-								},
-								style: {
+								},								
+								display: {
 									type: 'string',
 									component: 'dropdown',
-									label: 'Style',
-									ref: 'style',
-									options: [{
-										value: 'qlik',
-										label: 'Qlik'
-									}, {
-										value: 'bootstrap',
-										label: 'Bootstrap'
-									}, {
-										value: 'material',
-										label: 'Material'
-									}]
-								},
-								width: {
-									type: 'string',
-									component: 'dropdown',
-									label: 'Width',
-									ref: 'width',
-									options: [{
-										value: '',
-										label: 'Default'
-									}, {
-										value: 'fill',
-										label: 'Fill'
-									}, {
-										value: 'custom',
-										label: 'Custom'
-									}]
-								},
-								customwidth: {
-									type: 'string',
-									ref: 'customwidth',
-									label: 'Custom width',
-									expression: 'optional',
+									label: 'Display',
+									ref: 'buttonMode',
 									show: function (data) {
-										return data.width === 'custom';
-									}
-								},
-								vert: {
-									type: 'boolean',
-									label: 'Vertical',
-									ref: 'vert',
-									defaultValue: false,
-									show: function (data) {
-										return data.render === 'l';
-									}
-								},
+										return data.render === 'b';
+									},
+									options: [{
+										value: 'rowfill',
+										label: 'Row'
+									}, {
+										value: 'colfill',
+										label: 'Column'
+									}]
+								},								
 								updateondrag: {
 									type: 'boolean',
 									label: 'Update on drag',
@@ -169,12 +133,6 @@ define(['qlik'], function (qlik) {
 									show: function (data) {
 										return data.render === 'l';
 									}
-								},
-								thinHeader:{
-									type: 'boolean',
-									ref: 'thinHeader',
-									label: 'Thin header',
-									defaultValue: false
 								}
 							}
 						},
@@ -275,22 +233,46 @@ define(['qlik'], function (qlik) {
 									}
 								},
 								rangelabel: {
-									ref: 'rangelabel',
-									label: 'Slider label',
 									type: 'boolean',
+									label: 'Slider label',
+									ref: 'rangelabel',
 									defaultValue: false,
 									show: function (data) {
 										return data.render === 'l';
 									}
 								}
 							}
+						},
+						selections:{
+							show:false
 						}
+					}
+				},
+				about: {
+					label: 'About',
+					component: 'items',
+					items: {
+						header: {
+							label: 'Variable input',
+							style: 'header',
+							component: 'text'
+						},
+						paragraph1: {
+							label: 'An extensions that assigns a value to a variable. Values can be pre-defined and the object can be displayed as a slider, a button, a drop-down or an input box.',
+							component: 'text'
+						},
+						paragraph2: {
+							label: 'Variable input is based upon an extension created by Erik Wetterberg.',
+							component: 'text'
+						}						
 					}
 				}
 			}
 		},
 		support: {
-			export: true
+			export: false,
+			exportData: false,
+			snapshot: false
 		}
 	};
 });
