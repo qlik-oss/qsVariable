@@ -7,12 +7,12 @@ var pkg = require('./package.json');
 
 var DIST = './dist',
 	SRC = './src',
-	MAIN = pkg.main.substring(0, pkg.main.indexOf('.')),
-	DEPLOY = process.env.HOMEDRIVE + process.env.HOMEPATH + '/Documents/Qlik/Sense/Extensions/' + MAIN;
+	NAME = pkg.name,
+	DEPLOY = process.env.HOMEDRIVE + process.env.HOMEPATH + '/Documents/Qlik/Sense/Extensions/' + NAME;
 
 gulp.task('qext', function () {
 	var qext = {
-		name: pkg.name,
+		name: 'Variable input',
 		type: 'visualization',
 		description: pkg.description,
 		version: pkg.version,
@@ -42,7 +42,7 @@ gulp.task('qext', function () {
 		this.push(new gutil.File({
 			cwd: '',
 			base: '',
-			path: MAIN + '.qext',
+			path: NAME + '.qext',
 			contents: new Buffer(JSON.stringify(qext, null, 4))
 		}));
 		this.push(null);
@@ -82,7 +82,7 @@ gulp.task('zip', ['build'], function () {
 	var zip = require('gulp-zip');
 
 	return gulp.src(DIST + '/**/*')
-		.pipe(zip(MAIN + '.zip'))
+		.pipe(zip(`${NAME}_${pkg.version}.zip`))
 		.pipe(gulp.dest(DIST));
 });
 

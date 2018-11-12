@@ -1,5 +1,5 @@
 {
-  "name": "Variable input",
+  "name": "qlik-variable-input",
   "version": "6.0.1",
   "description": "An extensions that assigns a value to a variable.",
   "keywords": [
@@ -15,6 +15,10 @@
   ],
   "license": "MIT",
   "repository": "https://github.com/erikwett/qsVariable",
+  "scripts": {
+    "build": "gulp build",
+    "build:release": "gulp zip"
+  },
   "devDependencies": {
     "cssnano": "^3.4.0",
     "del": "^2.0.2",
