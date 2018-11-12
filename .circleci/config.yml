@@ -64,4 +64,4 @@ workflows:
                 - /release\/.*/
             tags:
               only:
-                - /v.*/
+                - /^\d+\.\d+\.\d+$/
