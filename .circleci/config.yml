@@ -62,6 +62,6 @@ workflows:
                 - master
                 - qlik-variable
                 - /release\/.*/
-            tags:
-              only:
-                - /^\d+\.\d+\.\d+$/
+            #tags:
+            #  only:
+            #    - /^\d+\.\d+\.\d+$/
