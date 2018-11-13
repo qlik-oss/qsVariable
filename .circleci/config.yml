@@ -58,10 +58,7 @@ workflows:
             - build
           filters:
             branches:
+              ignore: /.*/
+            tags:
               only:
-                - master
-                - qlik-variable
-                - /release\/.*/
-            #tags:
-            #  only:
-            #    - /^\d+\.\d+\.\d+$/
+                - /v.*/
