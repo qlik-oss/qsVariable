@@ -5,32 +5,39 @@
  * Copyrights licensed under the terms of the MIT license.
  * Original source <https://github.com/erikwett/qsVariable>
  */
-define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, util, prop, css) {
+/*global define*/
+define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, util, prop, css) {
 	'use strict';
-	$('<style>').html(css).appendTo('head');
+
+	$("<style>").html(css).appendTo("head");
+
 	function calcPercent(el) {
 		return (el.value - el.min) * 100 / (el.max - el.min);
 	}
+
 	function setVariableValue(ext, name, value) {
 		var app = qlik.currApp(ext);
 		app.variable.setStringValue(name, value);
 	}
-	function getVariableValue(layout) {
-		var T = typeof layout.variableValue;
-		if (T == 'object' || T == 'undefined') {
-			return '';
+
+	function getVariableValue(layout){
+		var T = typeof(layout.variableValue);
+		if(T == "object" || T == "undefined"){
+			return "";
 		} else {
 			return layout.variableValue;
 		}
 	}
-	function getNumber(value, defaultVal) {
+
+	function getNumber(value, defaultVal){
 		var T = parseFloat(value);
-		if (isNaN(T)) {
+		if(isNaN(T)){
 			return defaultVal;
 		} else {
 			return T;
 		}
 	}
+
 	function getClass(style, type, selected) {
 		switch (style) {
 			case 'material':
@@ -39,55 +46,62 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 					return 'selected';
 				}
 				break;
-
 			default:
 				switch (type) {
-					case 'button':
-						var Def = 'lui-button ';
-						return Def + (selected ? ' lui-active' : '');
-					case 'select':
+					case 'button':{
+						var Def = "lui-button ";
+                    	return Def + (selected ? " lui-active" : "");
+						//return selected ? 'qui-button-selected lui-button lui-button--success' : 'qui-button lui-button';
+					};break;
+					case 'select':{
 						return 'qui-select lui-select';
-					case 'input':
+					};break;
+					case 'input':{
 						return 'qui-input lui-input';
-					case 'button_text':
+					};break;
+					case 'button_text':{
 						return 'lui-button__text item-title';
+					};break;
 				}
-				break;
 		}
 	}
+
 	function getWidth(layout) {
 		if (layout.render === 'l') {
 			return '98%';
-		} else if (layout.render === 'b') {
-			if (layout.buttonMode === 'colfill') {
-				return '100%';
+		} else if(layout.render === 'b'){
+			if(layout.buttonMode === 'colfill') {
+				return '100%';								
 			} else {
 				var len = Math.max(1, getAlternativesCount(layout));
-				return 'calc( ' + 100 / len + '% - 3px)';
+				return 'calc( ' + 100 / len + '% - 3px)';				
 			}
 		} else {
 			return '100%';
 		}
 	}
+
 	function setLabel(slider) {
 		if (slider.label) {
-			{
+			 {
 				var T = $(slider.label).outerWidth();
-				var S = $(slider.label.parentElement).width();
-				var Offset = 100 * (T / S);
-				var Cal = calcPercent(slider);
-				if (Cal + Offset > 104) {
-					Cal = 104 - Offset;
-				}
-				slider.label.style.left = Cal + '%';
+                var S = $(slider.label.parentElement).width();
+                var Offset = 100*(T/S);
+                var Cal = calcPercent(slider);
+                if((Cal + Offset) > 104){
+                    Cal = 104 - Offset;
+                }
+                slider.label.style.left = Cal + "%";
+				//slider.label.style.left = calcPercent(slider) + '%';
 			}
 			slider.label.textContent = slider.value;
 		} else {
 			slider.title = slider.value;
 		}
 	}
+
 	function getAlternatives(text) {
-		return text.split('|').map(function(item) {
+		return text.split('|').map(function (item) {
 			var arr = item.split('~');
 			return {
 				value: arr[0],
@@ -95,12 +109,16 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 			};
 		});
 	}
+
 	function getAlternativesCount(layout) {
 		var Tmp = layout.valueType === 'd' ? getAlternatives(layout.dynamicvalues) : layout.alternatives;
 		return Tmp.length;
 	}
+
 	function showValue(element, layout) {
+		// find elements
 		var elements = element.querySelectorAll('input, button, option');
+
 		for (var index = 0; index < elements.length; index++) {
 			var el = elements[index];
 			switch (el.tagName) {
@@ -108,15 +126,12 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 					el.value = getVariableValue(layout);
 					setLabel(el);
 					break;
-
 				case 'OPTION':
-					el.selected = el.value === layout.variableValue;
+					el.selected = (el.value === layout.variableValue);
 					break;
-
 				case 'BUTTON':
 					el.className = getClass(layout.style, 'button', el.dataset.value === layout.variableValue);
 					break;
-
 				default:
 					console.log('showValue', el);
 			}
@@ -126,7 +141,9 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 		initialProperties: prop.initialProperties,
 		definition: prop.definition,
 		support: prop.support,
-		paint: function($element, layout) {
+		paint: function ($element, layout) {
+			var canInterAct = this._interactionState === 1;
+			util.setPointerEvents($element[0], canInterAct);
 			if (layout.thinHeader) {
 				$element.closest('.qv-object-variable').addClass('thin-header');
 			} else {
@@ -137,13 +154,18 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 				return qlik.Promise.resolve();
 			}
 			this.oldSetup = prop.cloneSetup(layout);
-			var wrapper = util.createElement('div', layout.style || 'qlik'), width = getWidth(layout), alternatives = layout.valueType === 'd' ? getAlternatives(layout.dynamicvalues) : layout.alternatives, ext = this;
+			var wrapper = util.createElement('div', layout.style || 'qlik'),
+				width = getWidth(layout),
+				alternatives = layout.valueType === 'd' ? getAlternatives(layout.dynamicvalues) : layout.alternatives,
+				ext = this;
+
 			if (layout.render === 'b') {
-				alternatives.forEach(function(alt) {
+				alternatives.forEach(function (alt) {
 					var btn = util.createElement('button', getClass(layout.style, 'button', alt.value === layout.variableValue), '');
 					var txtSpan = util.createElement('span', getClass(layout.style, 'button_text', false), alt.label);
 					btn.appendChild(txtSpan);
-					btn.onclick = function() {
+
+					btn.onclick = function () {
 						setVariableValue(ext, layout.variableName, alt.value);
 					};
 					btn.dataset.value = alt.value;
@@ -153,13 +175,13 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 			} else if (layout.render === 's') {
 				var sel = util.createElement('select', getClass(layout.style, 'select'));
 				sel.style.width = width;
-				alternatives.forEach(function(alt) {
+				alternatives.forEach(function (alt) {
 					var opt = util.createElement('option', undefined, alt.label);
 					opt.value = alt.value;
 					opt.selected = alt.value === layout.variableValue;
 					sel.appendChild(opt);
 				});
-				sel.onchange = function() {
+				sel.onchange = function () {
 					setVariableValue(ext, layout.variableName, this.value);
 				};
 				wrapper.appendChild(sel);
@@ -167,23 +189,26 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 				var range = util.createElement('input');
 				range.style.width = width;
 				range.type = 'range';
-				var Min = getNumber(layout.min, 0);
-				var Max = getNumber(layout.max, 100);
-				var Step = Math.abs(getNumber(layout.step, 1));
-				if (Min > Max) {
-					var T = Max;
-					Max = Min;
-					Min = T;
-				}
-				range.min = Min;
-				range.max = Max;
-				range.step = Step;
+				var Min = getNumber(layout.min, 0);              
+                var Max = getNumber(layout.max, 100);              
+                var Step = Math.abs(getNumber(layout.step, 1)); 	// negative step does not work in HTML 5 as of 2018
+
+                if (Min > Max) {
+                    var T = Max;
+                    Max = Min;
+                    Min = T;
+                }
+
+                range.min = Min;
+                range.max = Max;
+                range.step = Step;
 				range.value = layout.variableValue;
-				range.onchange = function() {
+				
+				range.onchange = function () {
 					setLabel(this);
 					setVariableValue(ext, layout.variableName, this.value);
 				};
-				range.oninput = function() {
+				range.oninput = function () {
 					setLabel(this);
 					if (layout.updateondrag) {
 						setVariableValue(ext, layout.variableName, this.value);
@@ -202,7 +227,7 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 				fld.style.width = width;
 				fld.type = 'text';
 				fld.value = getVariableValue(layout);
-				fld.onchange = function() {
+				fld.onchange = function () {
 					setVariableValue(ext, layout.variableName, this.value);
 				};
 				wrapper.appendChild(fld);
@@ -211,4 +236,5 @@ define([ 'qlik', './util', './properties', 'text!./style.css' ], function(qlik, 
 			return qlik.Promise.resolve();
 		}
 	};
+
 });

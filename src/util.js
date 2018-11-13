@@ -21,8 +21,13 @@ define([], function () {
 		}
 	}
 
+	function setPointerEvents(el, canInteract) {
+		el.style.pointerEvents = canInteract ? 'auto' : 'none';
+	}
+
 	return {
 		createElement: createElement,
-		setChild: setChild
+		setChild: setChild,
+		setPointerEvents: setPointerEvents,
 	};
 });
