@@ -17,6 +17,7 @@
   "repository": "https://github.com/erikwett/qsVariable",
   "scripts": {
     "build": "gulp build",
+    "build:debug": "gulp debug",
     "build:release": "gulp zip",
     "test:unit": "aw chrome -c ./test/aw.config.js"
   },

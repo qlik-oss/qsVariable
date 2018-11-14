@@ -10,6 +10,17 @@ Four different ways to render:
 
 You can have an expression to define the available values in a dropdown or buttons. 
 
+# Getting started
+
+## Installation
+1. Download the extension zip, `qlik-variable-input.zip`, from the latest release (https://github.com/qlik-oss/qsVariable/releases/latest)
+2. Install the extension:
+    a. **Qlik Sense Desktop**: unzip to a directory under [My Documents]/Qlik/Sense/Extensions.
+    b. **Qlik Sense Server**: import the zip file in the QMC.
+
+## New in version 6.0
+Bugfixes and removed styling alternatives.
+
 ## News in version 5.2
 The property 'Thin Header' will make sure that if you do not have a title or subtitle the header will be very thin,
 to avoid buttons getting cut off.
@@ -21,6 +32,7 @@ The extension yet again uses Capbilities API/qlik.js.
 
 ### Qlik Versions
 The extension has been tested with the following versions:
+November 2018
 November 2017 patch 1
 September 2017 patch 2
 June 2017 patch 3
@@ -28,27 +40,25 @@ June 2017 patch 3
 
 If you are using version 3.2, there is a bug in the capabilities API in this version which means that the extension might not work in a mashup with more than one app. If you encounter this bug, please upgrade to a leter release.
 
-Three different styles to choose from:
-## Qlik
-Styled like toolbar and property panel in Qlik Sense
+# Developing the extension
 
-![](qsVariable.png)
-## Bootstrap
-Styling inspired by Twitter Bootstrap
+If you want to do code changes to the extension follow these simple steps to get going.
 
-![](qsVariableB.png)
+1. Get Qlik Sense Desktop
+1. Create a new app and add qsVariable to a sheet.
+2. Clone the repository
+3. Run `npm install`
+4. Run `npm run build:debug` - this command should deploy debuggable version to something like `C:/Users/nerush/Documents/Qlik/Sense/Extensions/qlik-variable-input`
 
-## Material
-Styling inspired by Google Material design
-![](qsVariableM.png)
+```
+// Minified output to /dist folder.
+$ npm run build
+```
 
-## Vertical slider
-You can now also have vertical orientation for your slider
-![](vertSlider.png)
+```
+// Outputs a .zip file to /dist folder.
+$ npm run build:release
+```
 
-## Installation
-Download distribution zip file from here: https://github.com/erikwett/qsVariable/raw/master/dist/variable.zip
-
-Qlik Sense Desktop: unzip to a directory under [My Documents]/Qlik/Sense/Extensions, for example variable.
-
-Qlik Sense server: import the zip file in the QMC.
+# Original Author
+[erikwett](https://github.com/erikwett)
