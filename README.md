@@ -15,11 +15,13 @@ You can have an expression to define the available values in a dropdown or butto
 ## Installation
 1. Download the extension zip, `qlik-variable-input.zip`, from the latest release (https://github.com/qlik-oss/qsVariable/releases/latest)
 2. Install the extension:
+
     a. **Qlik Sense Desktop**: unzip to a directory under [My Documents]/Qlik/Sense/Extensions.
+    
     b. **Qlik Sense Server**: import the zip file in the QMC.
 
 ## New in version 6.0
-Bugfixes and removed styling alternatives.
+Contains breaking changes such as namespace for the extension, bugfixes and removed styling alternatives.
 
 ## News in version 5.2
 The property 'Thin Header' will make sure that if you do not have a title or subtitle the header will be very thin,
