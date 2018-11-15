@@ -16,6 +16,7 @@ gulp.task('qext', function () {
 		type: 'visualization',
 		description: pkg.description,
 		version: pkg.version,
+		icon: 'control',
 		preview: 'preview.png',
 		keywords: 'qlik-sense, visualization',
 		author: pkg.author,
