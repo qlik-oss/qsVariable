@@ -239,7 +239,14 @@ define(['qlik'], function (qlik) {
 						},
 						selections:{
 							show:false
-						}
+						},
+						general: {
+							items: {
+								details: {
+									show: false
+								}
+							}
+						},
 					}
 				},
 				about: {
