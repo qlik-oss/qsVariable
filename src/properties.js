@@ -1,24 +1,21 @@
 /*global define*/
 define(['qlik'], function (qlik) {
 	'use strict';
-	var variableList, variableListPromise;
 
-	function getPromise() {
-		if (!variableListPromise) {
-			variableListPromise = qlik.currApp().createGenericObject({
-				qVariableListDef: {
-					qType: 'variable'
-				}
-			}).then(function (reply) {
-				variableList = reply.layout.qVariableList.qItems.map(function (item) {
-					return {
-						value: item.qName,
-						label: item.qName
-					};
-				});
-				return variableList;
+	function getVariables() {
+		var variableListPromise = qlik.currApp().createGenericObject({
+			qVariableListDef: {
+				qType: 'variable'
+			}
+		}).then(function (reply) {
+			var variableList = reply.layout.qVariableList.qItems.map(function (item) {
+				return {
+					value: item.qName,
+					label: item.qName
+				};
 			});
-		}
+			return variableList;
+		});
 		return variableListPromise;
 	}
 
@@ -79,10 +76,7 @@ define(['qlik'], function (qlik) {
 									type: 'string',
 									component: 'dropdown',
 									options: function () {
-										if (variableList) {
-											return variableList;
-										}
-										return getPromise();
+										return getVariables();
 									},
 									change: function (data) {
 										data.variableValue = data.variableValue || {};
