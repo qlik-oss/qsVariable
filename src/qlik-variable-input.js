@@ -15,9 +15,42 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
 		return (el.value - el.min) * 100 / (el.max - el.min);
 	}
 
+	var allowSetVariable = true;
+	var setVariableRateLimitMS = 100;
+	var settingFinalValue = false;
+	var lastTimeSet;
+	var lastValueNotSet;
+	
+	function setFinalValue(ext, name) {
+		setTimeout(function(){
+			var timeSinceLastSet = Date.now() - lastTimeSet;
+			if(timeSinceLastSet < setVariableRateLimitMS) {
+				setFinalValue(ext, name);
+			} else{
+				var lastValue = lastValueNotSet;
+				settingFinalValue = false;
+				setVariableValue(ext, name, lastValue);
+			}
+		}, setVariableRateLimitMS);
+	}
+
 	function setVariableValue(ext, name, value) {
+		lastTimeSet = Date.now();
+		if(!allowSetVariable) {
+			lastValueNotSet = value;
+			if (!settingFinalValue) {
+				settingFinalValue = true;
+				setFinalValue(ext, name);
+			}
+			return;
+		}
+
 		var app = qlik.currApp(ext);
 		app.variable.setStringValue(name, value);
+		allowSetVariable = false;
+		setTimeout(function(){
+			allowSetVariable = true;
+		}, setVariableRateLimitMS);
 	}
 
 	function getVariableValue(layout){
