@@ -11,7 +11,7 @@ define(['qlik'], function (qlik) {
 			var variableList = reply.layout.qVariableList.qItems.map(function (item) {
 				return {
 					value: item.qName,
-					label: item.qName
+					label: item.qName.length > 50 ? item.qName.slice(0,50) + '...' : item.qName,
 				};
 			});
 			return variableList;
