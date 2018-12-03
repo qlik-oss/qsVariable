@@ -237,16 +237,29 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
                 range.step = Step;
 				range.value = layout.variableValue;
 				
-				range.onchange = function () {
-					setLabel(this);
-					setVariableValue(ext, layout.variableName, this.value);
+				var rangeListener = function() {
+					window.requestAnimationFrame(function() {
+						setLabel(range);
+						if (layout.updateondrag) {
+							setVariableValue(ext, layout.variableName, range.value);
+						}
+					});
 				};
-				range.oninput = function () {
-					setLabel(this);
-					if (layout.updateondrag) {
-						setVariableValue(ext, layout.variableName, this.value);
-					}
-				};
+				
+				range.addEventListener("mousedown", function() {
+					setLabel(range);
+					rangeListener();
+					range.addEventListener("mousemove", rangeListener);
+				});
+
+				range.addEventListener("mouseup", function() {
+					setLabel(range);
+					setVariableValue(ext, layout.variableName, range.value);
+					range.removeEventListener("mousemove", rangeListener);
+				});
+				
+				range.addEventListener("keydown", rangeListener);
+
 				wrapper.appendChild(range);
 				if (layout.rangelabel) {
 					var labelwrap = util.createElement('div', 'labelwrap');
