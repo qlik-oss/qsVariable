@@ -15,9 +15,42 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
 		return (el.value - el.min) * 100 / (el.max - el.min);
 	}
 
+	var allowSetVariable = true;
+	var setVariableRateLimitMS = 100;
+	var settingFinalValue = false;
+	var lastTimeSet;
+	var lastValueNotSet;
+	
+	function setFinalValue(ext, name) {
+		setTimeout(function(){
+			var timeSinceLastSet = Date.now() - lastTimeSet;
+			if(timeSinceLastSet < setVariableRateLimitMS) {
+				setFinalValue(ext, name);
+			} else{
+				var lastValue = lastValueNotSet;
+				settingFinalValue = false;
+				setVariableValue(ext, name, lastValue);
+			}
+		}, setVariableRateLimitMS);
+	}
+
 	function setVariableValue(ext, name, value) {
+		lastTimeSet = Date.now();
+		if(!allowSetVariable) {
+			lastValueNotSet = value;
+			if (!settingFinalValue) {
+				settingFinalValue = true;
+				setFinalValue(ext, name);
+			}
+			return;
+		}
+
 		var app = qlik.currApp(ext);
 		app.variable.setStringValue(name, value);
+		allowSetVariable = false;
+		setTimeout(function(){
+			allowSetVariable = true;
+		}, setVariableRateLimitMS);
 	}
 
 	function getVariableValue(layout){
@@ -204,16 +237,29 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
                 range.step = Step;
 				range.value = layout.variableValue;
 				
-				range.onchange = function () {
-					setLabel(this);
-					setVariableValue(ext, layout.variableName, this.value);
+				var rangeListener = function() {
+					window.requestAnimationFrame(function() {
+						setLabel(range);
+						if (layout.updateondrag) {
+							setVariableValue(ext, layout.variableName, range.value);
+						}
+					});
 				};
-				range.oninput = function () {
-					setLabel(this);
-					if (layout.updateondrag) {
-						setVariableValue(ext, layout.variableName, this.value);
-					}
-				};
+				
+				range.addEventListener("mousedown", function() {
+					setLabel(range);
+					rangeListener();
+					range.addEventListener("mousemove", rangeListener);
+				});
+
+				range.addEventListener("mouseup", function() {
+					setLabel(range);
+					setVariableValue(ext, layout.variableName, range.value);
+					range.removeEventListener("mousemove", rangeListener);
+				});
+				
+				range.addEventListener("keydown", rangeListener);
+
 				wrapper.appendChild(range);
 				if (layout.rangelabel) {
 					var labelwrap = util.createElement('div', 'labelwrap');
