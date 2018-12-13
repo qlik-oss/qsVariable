@@ -17,39 +17,23 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
 
 	var allowSetVariable = true;
 	var setVariableRateLimitMS = 100;
-	var settingFinalValue = false;
-	var lastTimeSet;
+	var lastValueSet;
 	var lastValueNotSet;
-	
-	function setFinalValue(ext, name) {
-		setTimeout(function(){
-			var timeSinceLastSet = Date.now() - lastTimeSet;
-			if(timeSinceLastSet < setVariableRateLimitMS) {
-				setFinalValue(ext, name);
-			} else{
-				var lastValue = lastValueNotSet;
-				settingFinalValue = false;
-				setVariableValue(ext, name, lastValue);
-			}
-		}, setVariableRateLimitMS);
-	}
 
 	function setVariableValue(ext, name, value) {
-		lastTimeSet = Date.now();
-		if(!allowSetVariable) {
+		if (!allowSetVariable) {
 			lastValueNotSet = value;
-			if (!settingFinalValue) {
-				settingFinalValue = true;
-				setFinalValue(ext, name);
-			}
 			return;
 		}
-
-		var app = qlik.currApp(ext);
-		app.variable.setStringValue(name, value);
 		allowSetVariable = false;
-		setTimeout(function(){
+		lastValueSet = value;
+		lastValueNotSet = null;
+		qlik.currApp(ext).variable.setStringValue(name, value);
+		setTimeout(function() {
 			allowSetVariable = true;
+			if (lastValueNotSet && lastValueNotSet != lastValueSet) {
+				setVariableValue(ext, name, lastValueNotSet);
+			}
 		}, setVariableRateLimitMS);
 	}
 
@@ -236,7 +220,16 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
                 range.max = Max;
                 range.step = Step;
 				range.value = layout.variableValue;
-				
+
+				var rangeKeyListener = function() {
+					window.requestAnimationFrame(function() {
+						setLabel(range);
+						setVariableValue(ext, layout.variableName, range.value);
+					});
+				}
+
+				range.addEventListener("keydown", rangeKeyListener);
+
 				var rangeListener = function() {
 					window.requestAnimationFrame(function() {
 						setLabel(range);
@@ -245,7 +238,7 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
 						}
 					});
 				};
-				
+
 				range.addEventListener("mousedown", function() {
 					setLabel(range);
 					rangeListener();
@@ -257,8 +250,6 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
 					setVariableValue(ext, layout.variableName, range.value);
 					range.removeEventListener("mousemove", rangeListener);
 				});
-				
-				range.addEventListener("keydown", rangeListener);
 
 				wrapper.appendChild(range);
 				if (layout.rangelabel) {
