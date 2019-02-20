@@ -27,7 +27,10 @@ jobs:
             --detect.project.name="qsVariable"
       - run:
           name: Build
-          command: npm run build:release
+          command: |
+            npm run build:release
+            sudo chmod +x ./.circleci/verify-files.sh
+            ./.circleci/verify-files.sh
       - persist_to_workspace:
           root: ~/qlik-variable-input
           paths:
