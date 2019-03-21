@@ -107,4 +107,4 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - qlik-variable
