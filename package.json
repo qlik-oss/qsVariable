@@ -1,6 +1,6 @@
 {
   "name": "qlik-variable-input",
-  "version": "6.3.0",
+  "version": "0.0.1",
   "description": "An extensions that assigns a value to a variable.",
   "keywords": [
     "qliksense extension"
@@ -17,8 +17,7 @@
   "repository": "https://github.com/erikwett/qsVariable",
   "scripts": {
     "build": "gulp build",
-    "build:debug": "gulp debug",
-    "build:release": "gulp zip",
+    "build:zip": "gulp zip",
     "test:unit": "aw chrome -c ./test/aw.config.js"
   },
   "devDependencies": {
