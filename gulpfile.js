@@ -15,7 +15,7 @@ gulp.task('qext', function () {
 	var qext = {
 		name: 'Variable input',
 		type: 'visualization',
-		description: pkg.description,
+		description: pkg.description + '\nVersion: ' + VERSION,
 		version: VERSION,
 		icon: 'control',
 		preview: 'preview.png',
