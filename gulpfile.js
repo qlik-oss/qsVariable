@@ -5,6 +5,7 @@ var gutil = require('gulp-util');
 var uglify = require('gulp-uglify');
 var saveLicense = require('uglify-save-license');
 var pkg = require('./package.json');
+var zip = require('gulp-zip');
 
 var DIST = './dist',
 	SRC = './src',
@@ -72,9 +73,14 @@ gulp.task('clean', function (ready) {
 	ready();
 });
 
-gulp.task('build',['clean', 'qext', 'less'], function () {
-	gulp.src([SRC + '/**/*.css', SRC + '/**/*.png'])
-		.pipe(gulp.dest(DIST));
+gulp.task('add-assets', function () {
+	return gulp.src([
+		SRC + '/**/*.png',
+		SRC + '/**/*.css'
+	]).pipe(gulp.dest(DIST));
+});
+
+gulp.task('add-src', function () {
 	return gulp.src(SRC + '/**/*.js')
 		.pipe(uglify({
 			output: {
@@ -84,12 +90,20 @@ gulp.task('build',['clean', 'qext', 'less'], function () {
 		.pipe(gulp.dest(DIST));
 });
 
-gulp.task('zip', ['build'], function () {
-	var zip = require('gulp-zip');
-
+gulp.task('zip-build', function () {
 	return gulp.src(DIST + '/**/*')
 		.pipe(zip(`${NAME}_${VERSION}.zip`))
 		.pipe(gulp.dest(DIST));
 });
 
-gulp.task('default', ['build']);
+gulp.task('build',
+	gulp.series('clean', 'qext', 'less', 'add-assets', 'add-src')
+);
+
+gulp.task('zip',
+	gulp.series('build', 'zip-build')
+);
+
+gulp.task('default',
+	gulp.series('build')
+);
