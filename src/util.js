@@ -1,33 +1,33 @@
 /*global define*/
 define([], function () {
-	'use strict';
+  'use strict';
 
-	function createElement(tag, cls, html) {
-		var el = document.createElement(tag);
-		if (cls) {
-			el.className = cls;
-		}
-		if (html !== undefined) {
-			el.innerHTML = html;
-		}
-		return el;
-	}
+  function createElement(tag, cls, html) {
+    var el = document.createElement(tag);
+    if (cls) {
+      el.className = cls;
+    }
+    if (html !== undefined) {
+      el.innerHTML = html;
+    }
+    return el;
+  }
 
-	function setChild(el, ch) {
-		if (el.childNodes.length === 0) {
-			el.appendChild(ch);
-		} else {
-			el.replaceChild(ch, el.childNodes[0]);
-		}
-	}
+  function setChild(el, ch) {
+    if (el.childNodes.length === 0) {
+      el.appendChild(ch);
+    } else {
+      el.replaceChild(ch, el.childNodes[0]);
+    }
+  }
 
-	function setPointerEvents(el, canInteract) {
-		el.style.pointerEvents = canInteract ? 'auto' : 'none';
-	}
+  function setPointerEvents(el, canInteract) {
+    el.style.pointerEvents = canInteract ? 'auto' : 'none';
+  }
 
-	return {
-		createElement: createElement,
-		setChild: setChild,
-		setPointerEvents: setPointerEvents,
-	};
+  return {
+    createElement: createElement,
+    setChild: setChild,
+    setPointerEvents: setPointerEvents,
+  };
 });
