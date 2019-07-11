@@ -1,7 +1,7 @@
 {
   "name": "qlik-variable-input",
   "version": "0.0.1",
-  "description": "An extensions that assigns a value to a variable.",
+  "description": "A control that assigns a value to a variable.",
   "keywords": [
     "qliksense extension"
   ],
