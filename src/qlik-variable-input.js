@@ -6,7 +6,7 @@
  * Original source <https://github.com/erikwett/qsVariable>
  */
 /*global define*/
-define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, util, prop, css) {
+define(['qlik', './util', './properties', 'text!./style.css','./lib/encoder'], function (qlik, util, prop, css) {
 	'use strict';
 
 	$("<style>").html(css).appendTo("head");
@@ -118,7 +118,7 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
 	}
 
 	function getAlternatives(text) {
-		text = encodeForHTML(text);
+		text = encoder.encodeForHTML(text);
 		return text.split('|').map(function (item) {
 			var arr = item.split('~');
 			return {
@@ -154,30 +154,7 @@ define(['qlik', './util', './properties', 'text!./style.css'], function (qlik, u
 					console.log('showValue', el);
 			}
 		}
-	}
-	/** Encodes input for use in HTML context
-   	*
-   	* @example <div style='color:navy'><span style='color:green'>// input is untrusted string</span>
-   	*  $('#element').html( &lt;ns>.encoder.encodeForHTML(input) );
-   	* </div>
-   	*
-   	* @name encoder.encodeForHTML
-   	* @function
-   	* @param {String} input
-   	* @returns {String} encoded
-   	*/
-  	function encodeForHTML(input) {
-    	if (typeof input === 'undefined' || input === null) {
-      		return '';
-    	}
-    	var encoded = '',
-    	encodingDiv = document.createElement('div');
-    	var textNode = document.createTextNode(input);
-    	encodingDiv.appendChild(textNode);
-    	encoded = encodingDiv.innerHTML;
-    	encodingDiv.removeChild(textNode);
-    	return encoded;
-  	}
+	}	
 	return {
 		initialProperties: prop.initialProperties,
 		definition: prop.definition,
