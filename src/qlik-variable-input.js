@@ -239,6 +239,17 @@ define(['qlik', './util', './properties', 'text!./style.css','./lib/encoder'], f
 						}
 					});
 				};
+				range.addEventListener("touchstart", function() {
+					setLabel(range);
+					rangeListener();
+					range.addEventListener("touchmove", rangeListener);
+				});
+
+				range.addEventListener("touchend", function() {
+					setLabel(range);
+					setVariableValue(ext, layout.variableName, range.value);
+					range.removeEventListener("touchmove", rangeListener);
+				});
 
 				range.addEventListener("mousedown", function() {
 					setLabel(range);
