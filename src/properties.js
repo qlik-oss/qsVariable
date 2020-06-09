@@ -261,8 +261,7 @@ define(['qlik'], function (qlik) {
               component: 'text'
             },
             paragraph1: {
-              label: `An extensions that assigns a value to a variable. Values can be pre-defined
-                and the object can be displayed as a slider, a button, a drop-down or an input box.`,
+	      label: 'A control that assigns a value to a variable. Values can be pre-defined and the object can be displayed as a slider, a button, a drop-down or an input box.',                
               component: 'text'
             },
             paragraph2: {

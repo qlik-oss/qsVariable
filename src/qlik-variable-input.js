@@ -6,7 +6,7 @@
  * Original source <https://github.com/erikwett/qsVariable>
  */
 /*global define*/
-define(['jquery', 'qlik', './util', './properties', './style.less'], function ($, qlik, util, prop, css) {
+define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encoder'], function ($, qlik, util, prop, css, encoder) {
   'use strict';
 
   $("<style>").html(css).appendTo("head");
@@ -113,6 +113,7 @@ define(['jquery', 'qlik', './util', './properties', './style.less'], function ($
   }
 
   function getAlternatives(text) {
+    text = encoder.encodeForHTML(text);
     return text.split('|').map(function (item) {
       var arr = item.split('~');
       return {
