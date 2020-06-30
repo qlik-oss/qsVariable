@@ -8,19 +8,19 @@
  * <em>encoder</em>
  */
 encoder = {
-    /** 
-     * Encodes input for use in HTML context
-     */
-    encodeForHTML(input) {
-      if (typeof input === 'undefined' || input === null) {
-        return '';
-      }
-      let encoded = '',
-        encodingDiv = document.createElement('div');
-      const textNode = document.createTextNode(input);
-      encodingDiv.appendChild(textNode);
-      encoded = encodingDiv.innerHTML;
-      encodingDiv.removeChild(textNode);
-      return encoded;
+  /** 
+  * Encodes input for use in HTML context
+  */
+  encodeForHTML(input) {
+    if (typeof input === 'undefined' || input === null) {
+      return '';
     }
-  }; 
+    let encoded = '',
+      encodingDiv = document.createElement('div');
+    const textNode = document.createTextNode(input);
+    encodingDiv.appendChild(textNode);
+    encoded = encodingDiv.innerHTML;
+    encodingDiv.removeChild(textNode);
+    return encoded;
+  }
+}; 
