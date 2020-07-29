@@ -6,7 +6,7 @@
  * Original source <https://github.com/erikwett/qsVariable>
  */
 /*global define*/
-define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encoder'], function ($, qlik, util, prop, css, encoder) {
+define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encoder'], function ($, qlik, util, prop, css) {
   'use strict';
 
   $("<style>").html(css).appendTo("head");
@@ -101,7 +101,7 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
         var Offset = 100 * (T / S);
         var Cal = calcPercent(slider);
         if ((Cal + Offset) > 104) {
-          Cal = 104 - Offset;
+        	Cal = 104 - Offset;
         }
         slider.label.style.left = Cal + "%";
         //slider.label.style.left = calcPercent(slider) + '%';
