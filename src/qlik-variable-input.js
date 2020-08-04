@@ -229,25 +229,25 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
 
         range.addEventListener("keydown", rangeKeyListener);
 
-				var rangeListener = function() {
-					window.requestAnimationFrame(function() {
-						setLabel(range);
-						if (layout.updateondrag) {
-							setVariableValue(ext, layout.variableName, range.value);
-						}
-					});
-				};
-				range.addEventListener("touchstart", function() {
-					setLabel(range);
-					rangeListener();
-					range.addEventListener("touchmove", rangeListener);
-				});
+        var rangeListener = function() {
+          window.requestAnimationFrame(function() {
+            setLabel(range);
+            if (layout.updateondrag) {
+              setVariableValue(ext, layout.variableName, range.value);
+            }
+          });
+        };
+        range.addEventListener("touchstart", function() {
+          setLabel(range);
+          rangeListener();
+          range.addEventListener("touchmove", rangeListener);
+        });
 
-				range.addEventListener("touchend", function() {
-					setLabel(range);
-					setVariableValue(ext, layout.variableName, range.value);
-					range.removeEventListener("touchmove", rangeListener);
-				});
+        range.addEventListener("touchend", function() {
+          setLabel(range);
+          setVariableValue(ext, layout.variableName, range.value);
+          range.removeEventListener("touchmove", rangeListener);
+        });
         
         range.addEventListener("mousedown", function () {
           setLabel(range);
