@@ -275,7 +275,8 @@ define(['qlik'], function (qlik) {
     support: {
       export: false,
       exportData: false,
-      snapshot: false
+      snapshot: false,
+      quickMobile: true
     }
   };
 });
