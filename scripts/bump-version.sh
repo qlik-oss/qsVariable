@@ -4,8 +4,8 @@ set -o errexit
 join_by () {
   local IFS="$1"; shift; echo "$*";
 }
-
-if [ "${CIRCLE_BRANCH}" == "qlik-variable" ]; then
+echo "${CIRCLE_BRANCH}"
+if [ "${CIRCLE_BRANCH}" == "release/6.9.x" ]; then
   # get version from repo
   OLD_VERSION="$(scripts/get-latest-version.sh $1 $2)"
   echo "Latest GitHub release version: ${OLD_VERSION}"
@@ -14,8 +14,8 @@ if [ "${CIRCLE_BRANCH}" == "qlik-variable" ]; then
   IFS='.' read -ra ARRAY_VERSION <<< "$OLD_VERSION"
 
   # bump minor
-  ARRAY_VERSION[1]=$((ARRAY_VERSION[1]+1))
-
+  ARRAY_VERSION[2]=$((ARRAY_VERSION[2]+1))
+  ARRAY_VERSION[1]=9
   # join into string
   NEW_VERSION=$(join_by . ${ARRAY_VERSION[@]})
 elif [[ ! -z "${CIRCLE_BRANCH}" && ! -z "${CIRCLE_BUILD_NUM}" ]]; then

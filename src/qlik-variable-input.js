@@ -6,7 +6,7 @@
  * Original source <https://github.com/erikwett/qsVariable>
  */
 /*global define*/
-define(['qlik', './util', './properties', 'text!./style.css','./lib/encoder'], function (qlik, util, prop, css) {
+define(['qlik', './util', './properties', 'text!./style.css','./lib/encoder'], function (qlik, util, prop, css, encoder) {
 	'use strict';
 
 	$("<style>").html(css).appendTo("head");
