@@ -1,11 +1,11 @@
 {
-  "name": "Variable",
-  "version": "5.2.3",
-  "description": "Variable extension",
+  "name": "qlik-variable-input",
+  "version": "0.0.1",
+  "description": "A control that assigns a value to a variable.",
   "keywords": [
     "qliksense extension"
   ],
-  "main": "variable.js",
+  "main": "qlik-variable-input.js",
   "private": true,
   "homepage": "https://github.com/erikwett/qsVariable",
   "bugs": "https://github.com/erikwett/qsVariable/issues",
@@ -15,19 +15,31 @@
   ],
   "license": "MIT",
   "repository": "https://github.com/erikwett/qsVariable",
+  "scripts": {
+    "build": "gulp build",
+    "build:zip": "gulp zip",
+    "eslint": "eslint src"
+  },
   "devDependencies": {
-    "cssnano": "^3.4.0",
-    "del": "^2.0.2",
-    "eslint": "^4.8.0",
-    "gulp": "^3.9.0",
-    "gulp-cssnano": "^2.1.0",
-    "gulp-dest": "^0.2.3",
-    "gulp-ignore": "^2.0.1",
-    "gulp-less": "^3.0.3",
-    "gulp-replace": "^0.5.4",
+    "@babel/core": "7.1.2",
+    "@babel/polyfill": "7.0.0",
+    "@babel/preset-env": "7.1.0",
+    "babel-eslint": "10.0.1",
+    "babel-loader": "8.0.4",
+    "css-loader": "1.0.1",
+    "del": "2.0.2",
+    "eslint": "5.7.0",
+    "eslint-loader": "2.1.1",
+    "gulp": "4.0.0",
     "gulp-util": "^3.0.7",
-    "gulp-zip": "^3.0.2",
-    "less-plugin-autoprefix": "^1.5.1",
-    "requirejs": "^2.1.22"
+    "gulp-zip": "3.0.2",
+    "jquery": "^3.3.1",
+    "requirejs": "^2.1.22",
+    "less": "3.8.1",
+    "less-loader": "4.1.0",
+    "style-loader": "0.23.1",
+    "stylelint": "8.4.0",
+    "stylelint-webpack-plugin": "0.10.5",
+    "webpack": "4.20.2"
   }
 }

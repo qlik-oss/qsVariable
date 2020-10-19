@@ -1,112 +1,89 @@
 /* global require process Buffer */
 var gulp = require('gulp');
-var cssnano = require('gulp-cssnano');
 var gutil = require('gulp-util');
-var replace = require('gulp-replace');
-var dest = require('gulp-dest');
 var pkg = require('./package.json');
+var zip = require('gulp-zip');
+var del = require('del');
+var webpackConfig = require('./webpack.config');
+var webpack = require('webpack');
 
 var DIST = './dist',
-	SRC = './src',
-	TMP = './tmp',
-	MAIN = pkg.main.substring(0, pkg.main.indexOf('.')),
-	NAME = pkg.name,
-	DEPLOY = process.env.HOMEDRIVE + process.env.HOMEPATH + '/Documents/Qlik/Sense/Extensions/' + NAME;
+  NAME = pkg.name,
+  VERSION = process.env.VERSION || 'local-dev';
 
-gulp.task('requirejs', ['less'], function (ready) {
-	var requirejs = require('requirejs');
-	var DIRNAME = "extensions/" + MAIN + "/";
-	requirejs.optimize({
-		baseUrl: SRC,
-		paths: {
-			"qlik": "empty:"
-		},
-		include: [MAIN],
-		exclude: ['qlik'],
-		// optimize : 'uglify',
-		findNestedDependencies: true,
-		out: TMP + '/' + MAIN + '.js'
-	}, function () {
-		gulp.src(TMP + '/' + MAIN + '.js').
-		pipe(replace('define("' + MAIN + '",', 'define(')).
-		pipe(replace('define("', 'define("' + DIRNAME)).
-		pipe(replace('"./', '"' + DIRNAME)).
-		pipe(gulp.dest(DIST));
-		ready();
-	}, function (error) {
-		console.error('requirejs task failed', JSON.stringify(error));
-		process.exit(1);
-	});
-});
 gulp.task('qext', function () {
-	var qext = {
-		name: pkg.name,
-		description: pkg.description,
-		version: pkg.version,
-		type: 'visualization',
-		author: pkg.author
-	};
-	if (pkg.contributors) {
-		qext.contributors = pkg.contributors;
-	}
-	var src = require('stream').Readable({
-		objectMode: true
-	})
-	src._read = function () {
-		this.push(new gutil.File({
-			cwd: "",
-			base: "",
-			path: MAIN + '.qext',
-			contents: new Buffer(JSON.stringify(qext, null, 4))
-		}));
-		this.push(null);
-	}
-	return src.pipe(gulp.dest(DIST));
+  var qext = {
+    name: 'Variable input',
+    type: 'visualization',
+    description: pkg.description + '\nVersion: ' + VERSION,
+    version: VERSION,
+    icon: 'control',
+    preview: 'preview.png',
+    keywords: 'qlik-sense, visualization',
+    author: pkg.author,
+    homepage: pkg.homepage,
+    license: pkg.license,
+    repository: '',
+    dependencies: {
+      'qlik-sense': '>=5.5.x'
+    }
+  };
+  if (pkg.contributors) {
+    qext.contributors = pkg.contributors;
+  }
+  var src = require('stream').Readable({
+    objectMode: true
+  });
+  src._read = function () {
+    this.push(new gutil.File({
+      cwd: '',
+      base: '',
+      path: NAME + '.qext',
+      contents: Buffer.from(JSON.stringify(qext, null, 4))
+    }));
+    this.push(null);
+  };
+  return src.pipe(gulp.dest(DIST));
 });
 
-gulp.task('less', function () {
-	var less = require('gulp-less');
-	var LessPluginAutoPrefix = require('less-plugin-autoprefix');
-	var autoprefix = new LessPluginAutoPrefix({
-		browsers: ["last 2 versions"]
-	});
-	return gulp.src(SRC + '/**/*.less')
-		.pipe(less({
-			plugins: [autoprefix]
-		}))
-		.pipe(cssnano())
-		.pipe(replace(/^/,
-			'define([], function () {var style = document.createElement("style");style.innerHTML = "'))
-		.pipe(replace(/$/, '";document.head.appendChild(style);});'))
-		.pipe(dest('', {
-			ext: '.js'
-		}))
-		.pipe(gulp.dest(SRC));
+gulp.task('clean', function () {
+  return del([DIST], { force: true });
 });
 
-gulp.task('clean', function (ready) {
-	var del = require('del');
-	del.sync([DIST, TMP]);
-	ready();
+gulp.task('zip-build', function () {
+  return gulp.src(DIST + '/**/*')
+    .pipe(zip(`${NAME}_${VERSION}.zip`))
+    .pipe(gulp.dest(DIST));
 });
 
-gulp.task('build',['clean', 'requirejs', 'qext'], function () {
-	var zip = require('gulp-zip');
-	setTimeout(function () {
-		gulp.src([DIST + '/**/*.qext', DIST + '/**/*.js'])
-			.pipe(zip(NAME + '.zip'))
-			.pipe(gulp.dest(DIST));
-	}, 1000);
+gulp.task('add-assets', function () {
+  return gulp.src('./assets/**/*').pipe(gulp.dest(DIST));
 });
 
-gulp.task('debug', ['less', 'qext'], function () {
-	return gulp.src([DIST + '/**/*.qext', SRC + '/**/*.js'])
-		.pipe(gulp.dest(DEPLOY));
+gulp.task('webpack-build', done => {
+  webpack(webpackConfig, (error, statistics) => {
+    const compilationErrors = statistics && statistics.compilation.errors;
+    const hasCompilationErrors = !statistics || (compilationErrors && compilationErrors.length > 0);
+
+    console.log(statistics && statistics.toString({ chunks: false, colors: true })); // eslint-disable-line no-console
+
+    if (error || hasCompilationErrors) {
+      console.log('Build has errors or eslint errors, fail it'); // eslint-disable-line no-console
+      process.exit(1);
+    }
+
+    done();
+  });
 });
 
-gulp.task('deploy', ['less', 'qext', 'requirejs'], function () {
-	return gulp.src([DIST + '/**/*.qext', DIST + '/**/*.js'])
-		.pipe(gulp.dest(DEPLOY));
-});
+gulp.task('build',
+  gulp.series('clean', 'webpack-build', 'qext', 'add-assets')
+);
 
-gulp.task('default', ['build']);
+gulp.task('zip',
+  gulp.series('build', 'zip-build')
+);
+
+gulp.task('default',
+  gulp.series('build')
+);

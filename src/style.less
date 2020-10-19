@@ -1,11 +1,11 @@
-.qv-object-variable.thin-header .qv-object-header.thin {
+.qv-object-qlik-variable-input .qv-object-header.thin {
     height: 5px !important;
 }
-.qv-object-variable {
+.qv-object-qlik-variable-input {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    .icon-zoom-in {
+    .icon-zoom-in, .lui-icon--expand {
         display: none;
     }
 	.qv-object-title {
@@ -26,14 +26,14 @@
     }
     .labelwrap {
         position: absolute;
-        top: 11px;
-        width: ~"calc(98% - 30px)";
+        top: 10px;
+        width: ~"calc(98% - 22px)";
     }
     input[type=range] {
         -webkit-appearance: none;
         width: 100%;
         position: absolute;
-        top: 20px;
+        top: 17px;
         padding: 0;
         border: none;
         height: 30px;
@@ -58,7 +58,12 @@
             background: transparent;
             border-color: transparent;
             color: transparent;
-        }		
+        }
+        &::-ms-tooltip {
+            -webkit-appearance: none;
+            display: none;
+        }
+        	
     }
 	.vert {
 		input[type=range] {
@@ -68,7 +73,7 @@
 		.labelwrap {
 			top: 24px;
 			right: 25px;
-        	height: ~"calc(100% - 30px)";
+        	height: ~"calc(100% - 22px)";
 			width: 10px;
     	}
 	}
