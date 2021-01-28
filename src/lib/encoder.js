@@ -23,6 +23,11 @@ define([], function() {
       encoded = encodingDiv.innerHTML;
       encodingDiv.removeChild(textNode);
       return encoded;
+    },
+    decodeHTML: function (input) {
+      var textArea = document.createElement('textarea');
+      textArea.innerHTML = input;
+      return textArea.value;
     }
   };
   return encoder;
