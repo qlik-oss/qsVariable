@@ -113,11 +113,10 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
   }
 
   function getAlternatives(text) {
-    text = encoder.encodeForHTML(text);
     return text.split('|').map(function (item) {
       var arr = item.split('~');
       return {
-        value: encoder.decodeHTML(arr[0]),
+        value: arr[0],
         label: arr.length > 1 ? arr[1] : arr[0]
       };
     });
