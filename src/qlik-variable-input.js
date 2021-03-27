@@ -1,18 +1,25 @@
 /**
  * @license
  * Copyright (c) 2015 Erik Wetterberg. All rights reserved.
- * 
+ *
  * Copyrights licensed under the terms of the MIT license.
  * Original source <https://github.com/erikwett/qsVariable>
  */
 /*global define*/
-define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encoder'], function ($, qlik, util, prop, css, encoder) {
-  'use strict';
+define([
+  "jquery",
+  "qlik",
+  "./util",
+  "./properties",
+  "./style.less",
+  "./lib/encoder",
+], function ($, qlik, util, prop, css, encoder) {
+  "use strict";
 
   $("<style>").html(css).appendTo("head");
 
   function calcPercent(el) {
-    return (el.value - el.min) * 100 / (el.max - el.min);
+    return ((el.value - el.min) * 100) / (el.max - el.min);
   }
 
   var allowSetVariable = true;
@@ -38,7 +45,7 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
   }
 
   function getVariableValue(layout) {
-    var T = typeof (layout.variableValue);
+    var T = typeof layout.variableValue;
     if (T == "object" || T == "undefined") {
       return "";
     } else {
@@ -54,43 +61,42 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
       return T;
     }
   }
-
   function getClass(style, type, selected) {
     switch (style) {
-      case 'material':
-      case 'bootstrap':
+      case "material":
+      case "bootstrap":
         if (selected) {
-          return 'selected';
+          return "selected";
         }
         break;
       default:
         switch (type) {
-          case 'button':
+          case "button":
             var Def = "lui-button ";
             return Def + (selected ? " lui-active" : "");
-            //return selected ? 'qui-button-selected lui-button lui-button--success' : 'qui-button lui-button';
-          case 'select':
-            return 'qui-select lui-select';
-          case 'input':
-            return 'qui-input lui-input';
-          case 'button_text':
-            return 'lui-button__text item-title';
+          //return selected ? 'qui-button-selected lui-button lui-button--success' : 'qui-button lui-button';
+          case "select":
+            return "qui-select lui-select";
+          case "input":
+            return "qui-input lui-input";
+          case "button_text":
+            return "lui-button__text item-title";
         }
     }
   }
 
   function getWidth(layout) {
-    if (layout.render === 'l') {
-      return '98%';
+    if (layout.render === "l") {
+      return "98%";
     }
-    if (layout.render === 'b') {
-      if (layout.buttonMode === 'colfill') {
-        return '100%';
+    if (layout.render === "b") {
+      if (layout.buttonMode === "colfill") {
+        return "100%";
       }
       var len = Math.max(1, getAlternativesCount(layout));
-      return 'calc( ' + 100 / len + '% - 3px)';
+      return "calc( " + 100 / len + "% - 3px)";
     }
-    return '100%';
+    return "100%";
   }
 
   function setLabel(slider) {
@@ -100,8 +106,8 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
         var S = $(slider.label.parentElement).width();
         var Offset = 100 * (T / S);
         var Cal = calcPercent(slider);
-        if ((Cal + Offset) > 104) {
-        	Cal = 104 - Offset;
+        if (Cal + Offset > 104) {
+          Cal = 104 - Offset;
         }
         slider.label.style.left = Cal + "%";
         //slider.label.style.left = calcPercent(slider) + '%';
@@ -113,39 +119,46 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
   }
 
   function getAlternatives(text) {
-    return text.split('|').map(function (item) {
-      var arr = item.split('~');
+    return text.split("|").map(function (item) {
+      var arr = item.split("~");
       return {
         value: arr[0],
-        label: arr.length > 1 ? arr[1] : arr[0]
+        label: arr.length > 1 ? arr[1] : arr[0],
       };
     });
   }
 
   function getAlternativesCount(layout) {
-    var Tmp = layout.valueType === 'd' ? getAlternatives(layout.dynamicvalues) : layout.alternatives;
+    var Tmp =
+      layout.valueType === "d"
+        ? getAlternatives(layout.dynamicvalues)
+        : layout.alternatives;
     return Tmp.length;
   }
 
   function showValue(element, layout) {
     // find elements
-    var elements = element.querySelectorAll('input, button, option');
+    var elements = element.querySelectorAll("input, button, option");
 
     for (var index = 0; index < elements.length; index++) {
       var el = elements[index];
       switch (el.tagName) {
-        case 'INPUT':
+        case "INPUT":
           el.value = getVariableValue(layout);
           setLabel(el);
           break;
-        case 'OPTION':
-          el.selected = (el.value === layout.variableValue);
+        case "OPTION":
+          el.selected = el.value === layout.variableValue;
           break;
-        case 'BUTTON':
-          el.className = getClass(layout.style, 'button', el.dataset.value === layout.variableValue);
+        case "BUTTON":
+          el.className = getClass(
+            layout.style,
+            "button",
+            el.dataset.value === layout.variableValue
+          );
           break;
         default:
-          console.log('showValue', el); // eslint-disable-line no-console
+          console.log("showValue", el); // eslint-disable-line no-console
       }
     }
   }
@@ -157,27 +170,39 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
       var canInterAct = this.$scope.options.interactionState === 1;
       util.setPointerEvents($element[0], canInterAct);
       if (layout.thinHeader) {
-        $element.closest('.qv-object-variable').addClass('thin-header');
+        $element.closest(".qv-object-variable").addClass("thin-header");
       } else {
-        $element.closest('.qv-object-variable').removeClass('thin-header');
+        $element.closest(".qv-object-variable").removeClass("thin-header");
       }
       if (this.oldSetup && !this.oldSetup.changed(layout)) {
         showValue($element[0], layout);
         return qlik.Promise.resolve();
       }
       this.oldSetup = prop.cloneSetup(layout);
-      var wrapper = util.createElement('div', layout.style || 'qlik'),
+      var wrapper = util.createElement("div", layout.style || "qlik"),
         width = getWidth(layout),
-        alternatives
-          = layout.valueType === 'd' ? getAlternatives(layout.dynamicvalues) : layout.alternatives,
+        alternatives =
+          layout.valueType === "d"
+            ? getAlternatives(layout.dynamicvalues)
+            : layout.alternatives,
         ext = this;
 
-      if (layout.render === 'b') {
+      if (layout.render === "b") {
         alternatives.forEach(function (alt) {
           var btn = util.createElement(
-            'button', getClass(layout.style, 'button', alt.value === layout.variableValue), '');
+            "button",
+            getClass(
+              layout.style,
+              "button",
+              alt.value === layout.variableValue
+            ),
+            ""
+          );
           var txtSpan = util.createElement(
-            'span', getClass(layout.style, 'button_text', false), alt.label);
+            "span",
+            getClass(layout.style, "button_text", false),
+            alt.label
+          );
           btn.appendChild(txtSpan);
 
           btn.onclick = function () {
@@ -187,11 +212,14 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
           btn.style.width = width;
           wrapper.appendChild(btn);
         });
-      } else if (layout.render === 's') {
-        var sel = util.createElement('select', getClass(layout.style, 'select'));
+      } else if (layout.render === "s") {
+        var sel = util.createElement(
+          "select",
+          getClass(layout.style, "select")
+        );
         sel.style.width = width;
         alternatives.forEach(function (alt) {
-          var opt = util.createElement('option', undefined, alt.label);
+          var opt = util.createElement("option", undefined, alt.label);
           opt.value = alt.value;
           opt.selected = alt.value === layout.variableValue;
           sel.appendChild(opt);
@@ -200,13 +228,13 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
           setVariableValue(ext, layout.variableName, this.value);
         };
         wrapper.appendChild(sel);
-      } else if (layout.render === 'l') {
-        var range = util.createElement('input');
+      } else if (layout.render === "l") {
+        var range = util.createElement("input");
         range.style.width = width;
-        range.type = 'range';
+        range.type = "range";
         var Min = getNumber(layout.min, 0);
         var Max = getNumber(layout.max, 100);
-        var Step = Math.abs(getNumber(layout.step, 1)); 	// negative step does not work in HTML 5 as of 2018
+        var Step = Math.abs(getNumber(layout.step, 1)); // negative step does not work in HTML 5 as of 2018
 
         if (Min > Max) {
           var T = Max;
@@ -228,26 +256,26 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
 
         range.addEventListener("keydown", rangeKeyListener);
 
-        var rangeListener = function() {
-          window.requestAnimationFrame(function() {
+        var rangeListener = function () {
+          window.requestAnimationFrame(function () {
             setLabel(range);
             if (layout.updateondrag) {
               setVariableValue(ext, layout.variableName, range.value);
             }
           });
         };
-        range.addEventListener("touchstart", function() {
+        range.addEventListener("touchstart", function () {
           setLabel(range);
           rangeListener();
           range.addEventListener("touchmove", rangeListener);
         });
 
-        range.addEventListener("touchend", function() {
+        range.addEventListener("touchend", function () {
           setLabel(range);
           setVariableValue(ext, layout.variableName, range.value);
           range.removeEventListener("touchmove", rangeListener);
         });
-        
+
         range.addEventListener("mousedown", function () {
           setLabel(range);
           rangeListener();
@@ -262,16 +290,20 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
 
         wrapper.appendChild(range);
         if (layout.rangelabel) {
-          var labelwrap = util.createElement('div', 'labelwrap');
-          range.label = util.createElement('div', 'rangelabel', layout.variableValue);
+          var labelwrap = util.createElement("div", "labelwrap");
+          range.label = util.createElement(
+            "div",
+            "rangelabel",
+            layout.variableValue
+          );
           labelwrap.appendChild(range.label);
           wrapper.appendChild(labelwrap);
         }
         setLabel(range);
       } else {
-        var fld = util.createElement('input', getClass(layout.style, 'input'));
+        var fld = util.createElement("input", getClass(layout.style, "input"));
         fld.style.width = width;
-        fld.type = 'text';
+        fld.type = "text";
         fld.value = getVariableValue(layout);
         fld.onchange = function () {
           setVariableValue(ext, layout.variableName, this.value);
@@ -280,6 +312,6 @@ define(['jquery', 'qlik', './util', './properties', './style.less', './lib/encod
       }
       util.setChild($element[0], wrapper);
       return qlik.Promise.resolve();
-    }
+    },
   };
 });
