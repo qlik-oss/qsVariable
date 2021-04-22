@@ -5,7 +5,7 @@ join_by () {
   local IFS="$1"; shift; echo "$*";
 }
 
-if [ "${CIRCLE_BRANCH}" == "- release/6.12.x" ]; then
+if [ "${CIRCLE_BRANCH}" == "release/6.12.x" ]; then
   # get version from repo
   OLD_VERSION="$(scripts/get-latest-version.sh $1 $2)"
   echo "Latest GitHub release version: ${OLD_VERSION}"
