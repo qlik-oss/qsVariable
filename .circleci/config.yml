@@ -108,3 +108,4 @@ workflows:
             branches:
               only:
                 - qlik-variable
+                - release/6.12.x
