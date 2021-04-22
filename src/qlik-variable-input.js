@@ -118,7 +118,6 @@ define(['qlik', './util', './properties', 'text!./style.css','./lib/encoder'], f
 	}
 
 	function getAlternatives(text) {
-		text = encoder.encodeForHTML(text);
 		return text.split('|').map(function (item) {
 			var arr = item.split('~');
 			return {

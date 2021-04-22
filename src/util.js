@@ -1,5 +1,5 @@
 /*global define*/
-define([], function () {
+define(['./lib/encoder'], function (encoder) {
 	'use strict';
 
 	function createElement(tag, cls, html) {
@@ -8,6 +8,7 @@ define([], function () {
 			el.className = cls;
 		}
 		if (html !== undefined) {
+			html = encoder.encodeForHTML(html);
 			el.innerHTML = html;
 		}
 		return el;
