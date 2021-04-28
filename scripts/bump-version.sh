@@ -14,7 +14,7 @@ if [ "${CIRCLE_BRANCH}" == "release/6.12.x" ]; then
   IFS='.' read -ra ARRAY_VERSION <<< "$OLD_VERSION"
 
   # bump minor
-  ARRAY_VERSION[2]=$((ARRAY_VERSION[2]+1))
+  ARRAY_VERSION[2]=3
   ARRAY_VERSION[1]=12
 
   # join into string
