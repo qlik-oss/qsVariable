@@ -11,7 +11,8 @@ module.exports = {
   env: {
     browser: true,
     es6: true,
-    node: true
+    node: true,
+    jest: true
   },
   globals: {
     angular: false,
@@ -20,7 +21,8 @@ module.exports = {
     document: false,
     expect: false,
     it: false,
-    require: false
+    require: false,
+    getDefinitionFn: false,
   },
   rules: {
     "indent": ["error", 2, { "SwitchCase": 1 }],
