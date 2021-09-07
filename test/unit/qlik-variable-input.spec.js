@@ -29,6 +29,6 @@ describe('qlik-variable-input', () => {
 
   it('should return definition with correct exposed properties', () => {
     const definition = createComponent();
-    expect(Object.keys(definition).sort()).toEqual(['definition', 'initialProperties', 'paint', 'support', 'test'].sort());
+    expect(Object.keys(definition).sort()).toEqual(['definition', 'initialProperties', 'paint', 'support'].sort());
   });
 });
