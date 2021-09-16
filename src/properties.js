@@ -33,7 +33,6 @@ define(['qlik'], function (qlik) {
       layout.buttonMode,
       layout.updateondrag,
       layout.rangelabel,
-      layout.rangelabel,
       layout.allowSetVariable,
       layout.setVariableRateLimitMS,
       layout.lastValueSet,
