@@ -162,6 +162,7 @@ define([
     definition: prop.definition,
     support: prop.support,
     paint: function ($element, layout) {
+      var self = this;
       var canInterAct = this.$scope.options.interactionState === 1;
       util.setPointerEvents($element[0], canInterAct);
       if (layout.thinHeader) {
@@ -301,11 +302,11 @@ define([
         fld.type = "text";
         fld.value = getVariableValue(layout);
         fld.onchange = function () {
-          layout.allowSetVariable = true;
-          layout.setVariableRateLimitMS = 100;
-          layout.lastValueSet = null;
-          layout.lastValueNotSet = null;
-          setVariableValue(ext, layout.variableName, this.value, layout);
+          self.allowSetVariable = true;
+          self.setVariableRateLimitMS = 100;
+          self.lastValueSet = null;
+          self.lastValueNotSet = null;
+          setVariableValue(ext, layout.variableName, this.value, self);
         };
         wrapper.appendChild(fld);
       }
