@@ -22,26 +22,21 @@ define([
     return ((el.value - el.min) * 100) / (el.max - el.min);
   }
 
-  var allowSetVariable = true;
-  var setVariableRateLimitMS = 100;
-  var lastValueSet;
-  var lastValueNotSet;
-
-  function setVariableValue(ext, name, value) {
-    if (!allowSetVariable) {
-      lastValueNotSet = value;
+  function setVariableValue(ext, name, value, scp) {
+    if (!scp.allowSetVariable) {
+      scp.lastValueNotSet = value;
       return;
     }
-    allowSetVariable = false;
-    lastValueSet = value;
-    lastValueNotSet = null;
+    scp.allowSetVariable = false;
+    scp.lastValueSet = value;
+    scp.lastValueNotSet = null;
     qlik.currApp(ext).variable.setStringValue(name, value);
     setTimeout(function () {
-      allowSetVariable = true;
-      if (lastValueNotSet && lastValueNotSet != lastValueSet) {
-        setVariableValue(ext, name, lastValueNotSet);
+      scp.allowSetVariable = true;
+      if (scp.lastValueNotSet && scp.lastValueNotSet != scp.lastValueSet) {
+        setVariableValue(ext, name, scp.lastValueNotSet);
       }
-    }, setVariableRateLimitMS);
+    }, scp.setVariableRateLimitMS);
   }
 
   function getVariableValue(layout) {
@@ -167,6 +162,7 @@ define([
     definition: prop.definition,
     support: prop.support,
     paint: function ($element, layout) {
+      var self = this;
       var canInterAct = this.$scope.options.interactionState === 1;
       util.setPointerEvents($element[0], canInterAct);
       if (layout.thinHeader) {
@@ -306,7 +302,11 @@ define([
         fld.type = "text";
         fld.value = getVariableValue(layout);
         fld.onchange = function () {
-          setVariableValue(ext, layout.variableName, this.value);
+          self.allowSetVariable = true;
+          self.setVariableRateLimitMS = 100;
+          self.lastValueSet = null;
+          self.lastValueNotSet = null;
+          setVariableValue(ext, layout.variableName, this.value, self);
         };
         wrapper.appendChild(fld);
       }
