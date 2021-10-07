@@ -18,7 +18,8 @@
   "scripts": {
     "build": "gulp build",
     "build:zip": "gulp zip",
-    "eslint": "eslint src"
+    "eslint": "eslint src",
+    "test:unit": "jest --config ./test/jest.config.js"
   },
   "devDependencies": {
     "@babel/core": "7.1.2",
@@ -33,6 +34,7 @@
     "gulp": "4.0.0",
     "gulp-util": "^3.0.7",
     "gulp-zip": "3.0.2",
+    "jest": "^27.1.0",
     "jquery": "^3.3.1",
     "requirejs": "^2.1.22",
     "less": "3.8.1",
