@@ -22,21 +22,8 @@ define([
     return ((el.value - el.min) * 100) / (el.max - el.min);
   }
 
-  function setVariableValue(ext, name, value, scp) {
-    if (!scp.allowSetVariable) {
-      scp.lastValueNotSet = value;
-      return;
-    }
-    scp.allowSetVariable = false;
-    scp.lastValueSet = value;
-    scp.lastValueNotSet = null;
-    qlik.currApp(ext).variable.setStringValue(name, value);
-    setTimeout(function () {
-      scp.allowSetVariable = true;
-      if (scp.lastValueNotSet && scp.lastValueNotSet != scp.lastValueSet) {
-        setVariableValue(ext, name, scp.lastValueNotSet);
-      }
-    }, scp.setVariableRateLimitMS);
+  function setVariableValue(ext, name, value) {
+    return qlik.currApp(ext).variable.setStringValue(name, value);
   }
 
   function getVariableValue(layout) {
@@ -162,7 +149,6 @@ define([
     definition: prop.definition,
     support: prop.support,
     paint: function ($element, layout) {
-      var self = this;
       var canInterAct = this.$scope.options.interactionState === 1;
       util.setPointerEvents($element[0], canInterAct);
       if (layout.thinHeader) {
@@ -301,12 +287,22 @@ define([
         fld.style.width = width;
         fld.type = "text";
         fld.value = getVariableValue(layout);
-        fld.onchange = function () {
-          self.allowSetVariable = true;
-          self.setVariableRateLimitMS = 100;
-          self.lastValueSet = null;
-          self.lastValueNotSet = null;
-          setVariableValue(ext, layout.variableName, this.value, self);
+
+        ext.quedValue = null;
+        fld.onchange = async function () {
+          ext.reFocus = document.activeElement === fld;
+          fld.disabled = true;
+
+          try {
+            await setVariableValue(ext, layout.variableName, this.value);
+          } catch (e) {
+            console.log("qlik-variable-input: Failed to set variable");
+          }
+
+          fld.disabled = false;
+          if (ext.reFocus) {
+            fld.focus();
+          }
         };
         wrapper.appendChild(fld);
       }
