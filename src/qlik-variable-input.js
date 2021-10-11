@@ -22,8 +22,35 @@ define([
     return ((el.value - el.min) * 100) / (el.max - el.min);
   }
 
-  function setVariableValue(ext, name, value) {
-    return qlik.currApp(ext).variable.setStringValue(name, value);
+  function setVariableRateLimited(ext, name, value) {
+    if (ext.valueToSet !== null) {
+      ext.valueToSet = value;
+      return;
+    }
+    ext.valueToSet = value;
+
+    setTimeout(function () {
+      qlik.currApp(ext).variable.setStringValue(name, ext.valueToSet);
+      ext.valueToSet = null;
+    }, 100);
+  }
+
+  async function setVariableValue(ext, name, value, element) {
+    if (element) {
+      ext.reFocus = document.activeElement === element;
+      element.disabled = true;
+    }
+    try {
+      await qlik.currApp(ext).variable.setStringValue(name, value);
+    } catch (e) {
+      console.log("qlik-variable-input: Failed to set variable");
+    }
+    if (element) {
+      element.disabled = false;
+      if (ext.reFocus) {
+        element.focus();
+      }
+    }
   }
 
   function getVariableValue(layout) {
@@ -169,6 +196,8 @@ define([
             : layout.alternatives,
         ext = this;
 
+      ext.valueToSet = null;
+
       if (layout.render === "b") {
         alternatives.forEach(function (alt) {
           var btn = util.createElement(
@@ -188,7 +217,7 @@ define([
           btn.appendChild(txtSpan);
 
           btn.onclick = function () {
-            setVariableValue(ext, layout.variableName, alt.value);
+            setVariableValue(ext, layout.variableName, alt.value, btn);
           };
           btn.dataset.value = alt.value;
           btn.style.width = width;
@@ -207,7 +236,7 @@ define([
           sel.appendChild(opt);
         });
         sel.onchange = function () {
-          setVariableValue(ext, layout.variableName, this.value);
+          setVariableValue(ext, layout.variableName, this.value, sel);
         };
         wrapper.appendChild(sel);
       } else if (layout.render === "l") {
@@ -232,7 +261,7 @@ define([
         var rangeKeyListener = function () {
           window.requestAnimationFrame(function () {
             setLabel(range);
-            setVariableValue(ext, layout.variableName, range.value);
+            setVariableRateLimited(ext, layout.variableName, range.value);
           });
         };
 
@@ -242,7 +271,7 @@ define([
           window.requestAnimationFrame(function () {
             setLabel(range);
             if (layout.updateondrag) {
-              setVariableValue(ext, layout.variableName, range.value);
+              setVariableRateLimited(ext, layout.variableName, range.value);
             }
           });
         };
@@ -254,7 +283,7 @@ define([
 
         range.addEventListener("touchend", function () {
           setLabel(range);
-          setVariableValue(ext, layout.variableName, range.value);
+          setVariableValue(ext, layout.variableName, range.value, range);
           range.removeEventListener("touchmove", rangeListener);
         });
 
@@ -266,7 +295,7 @@ define([
 
         range.addEventListener("mouseup", function () {
           setLabel(range);
-          setVariableValue(ext, layout.variableName, range.value);
+          setVariableValue(ext, layout.variableName, range.value, range);
           range.removeEventListener("mousemove", rangeListener);
         });
 
@@ -290,19 +319,7 @@ define([
 
         ext.quedValue = null;
         fld.onchange = async function () {
-          ext.reFocus = document.activeElement === fld;
-          fld.disabled = true;
-
-          try {
-            await setVariableValue(ext, layout.variableName, this.value);
-          } catch (e) {
-            console.log("qlik-variable-input: Failed to set variable");
-          }
-
-          fld.disabled = false;
-          if (ext.reFocus) {
-            fld.focus();
-          }
+          setVariableValue(ext, layout.variableName, this.value, fld);
         };
         wrapper.appendChild(fld);
       }
