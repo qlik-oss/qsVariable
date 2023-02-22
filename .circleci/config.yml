@@ -3,7 +3,7 @@ version: 2
 defaults: &defaults
   working_directory: ~/qlik-variable-input
   docker:
-    - image: circleci/node:stretch
+    - image: circleci/node:14.0.0
   environment:
     GITHUB_ORG: "qlik-oss"
     GITHUB_REPO: "qsVariable"
@@ -38,22 +38,6 @@ jobs:
       - store_artifacts:
           path: dist
           destination: dist
-  blackduck:
-    docker:
-    - image: circleci/node:stretch-browsers
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: npm install
-      - run:
-          name: BlackDuck scan
-          command: curl -s https://detect.synopsys.com/detect.sh | bash -s -- \
-            --blackduck.url="https://qliktech.blackducksoftware.com" \
-            --blackduck.trust.cert=true \
-            --blackduck.username="svc-blackduck" \
-            --blackduck.password=${svc_blackduck} \
-            --detect.project.name="qsVariable"
   deploy:
     <<: *defaults
     steps:
@@ -82,14 +66,9 @@ workflows:
           filters: # Required since jobs that requires this uses tag-filter
             tags:
               only: /.*/
-      - blackduck:
-          filters: # Required since jobs that requires this uses tag-filter
-            tags:
-              only: /.*/
       - deploy:
           requires:
             - build
-            - blackduck
           filters:
             tags:
               only:
