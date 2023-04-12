@@ -235,6 +235,10 @@ define([
           opt.selected = alt.value === layout.variableValue;
           sel.appendChild(opt);
         });
+        //Handle the special case when dropdown has only one option
+        if (sel.options.length === 1){
+          setVariableValue(ext, layout.variableName, sel.options[0].value, sel);
+        } 
         sel.onchange = function () {
           setVariableValue(ext, layout.variableName, this.value, sel);
         };
