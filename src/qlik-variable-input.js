@@ -229,6 +229,11 @@ define([
           getClass(layout.style, "select")
         );
         sel.style.width = width;
+
+        //Adding a Select option to handle the case when dropdown has only one option
+        var selectOption = util.createElement("option", undefined, "-- SELECT --");
+        selectOption.value = "";
+        sel.appendChild(selectOption);
         alternatives.forEach(function (alt) {
           var opt = util.createElement("option", undefined, alt.label);
           opt.value = alt.value;
