@@ -229,16 +229,17 @@ define([
           getClass(layout.style, "select")
         );
         sel.style.width = width;
+
+        //Adding a Select option to handle the case when dropdown has only one option
+        var selectOption = util.createElement("option", undefined, "-- SELECT --");
+        selectOption.value = "";
+        sel.appendChild(selectOption);
         alternatives.forEach(function (alt) {
           var opt = util.createElement("option", undefined, alt.label);
           opt.value = alt.value;
           opt.selected = alt.value === layout.variableValue;
           sel.appendChild(opt);
         });
-        //Handle the special case when dropdown has only one option
-        if (sel.options.length === 1){
-          setVariableValue(ext, layout.variableName, sel.options[0].value, sel);
-        } 
         sel.onchange = function () {
           setVariableValue(ext, layout.variableName, this.value, sel);
         };
