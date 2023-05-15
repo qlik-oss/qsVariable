@@ -1,5 +1,5 @@
 {
-  "name": "qlik-variable-input",
+  "name": "@qlik/qlik-variable-input",
   "version": "6.22.0",
   "description": "A control that assigns a value to a variable.",
   "keywords": [

@@ -7,9 +7,9 @@ var del = require('del');
 var webpackConfig = require('./webpack.config');
 var webpack = require('webpack');
 
-var DIST = './dist',
-  NAME = pkg.name,
-  VERSION = process.env.VERSION || 'local-dev';
+var DIST = "./dist",
+  NAME = "qlik-variable-input",
+  VERSION = process.env.VERSION || "local-dev";
 
 gulp.task('qext', function () {
   var qext = {
