@@ -3,7 +3,7 @@ version: 2
 defaults: &defaults
   working_directory: ~/qlik-variable-input
   docker:
-    - image: cimg/node:lts
+    - image: cimg/node:16.19.1
   environment:
     GITHUB_ORG: "qlik-oss"
     GITHUB_REPO: "qsVariable"
