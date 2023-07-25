@@ -233,10 +233,9 @@ define([
         //Adding a Select option to handle the case when dropdown has only one option
         var selectOption = util.createElement("option", undefined, "-- SELECT --");
         selectOption.value = "";
-        sel.appendChild(selectOption);
-        // Remove select option if we have other values
-        if(alternatives.length !== 0){
-          sel.removeChild(selectOption);
+        // Only add if we dont have other values
+        if(alternatives.length === 0){
+          sel.appendChild(selectOption);
         }
         alternatives.forEach(function (alt) {
           var opt = util.createElement("option", undefined, alt.label);
