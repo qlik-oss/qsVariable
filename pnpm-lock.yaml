@@ -21,8 +21,8 @@ devDependencies:
     specifier: 8.0.4
     version: 8.0.4(@babel/core@7.1.2)(webpack@4.47.0)
   css-loader:
-    specifier: 6.9.1
-    version: 6.9.1(webpack@4.47.0)
+    specifier: 5.2.7
+    version: 5.2.7(webpack@4.47.0)
   del:
     specifier: 2.0.2
     version: 2.0.2
@@ -2796,19 +2796,21 @@ packages:
     engines: {node: '>=12 || >=16'}
     dev: true
 
-  /css-loader@6.9.1(webpack@4.47.0):
-    resolution: {integrity: sha512-OzABOh0+26JKFdMzlK6PY1u5Zx8+Ck7CVRlcGNZoY9qwJjdfu2VWFuprTIpPW+Av5TZTVViYWcFQaEEQURLknQ==}
-    engines: {node: '>= 12.13.0'}
+  /css-loader@5.2.7(webpack@4.47.0):
+    resolution: {integrity: sha512-Q7mOvpBNBG7YrVGMxRxcBJZFL75o+cH2abNASdibkj/fffYD8qWbInZrD0S9ccI6vZclF3DsHE7njGlLtaHbhg==}
+    engines: {node: '>= 10.13.0'}
     peerDependencies:
-      webpack: ^5.0.0
+      webpack: ^4.27.0 || ^5.0.0
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.33)
+      loader-utils: 2.0.4
       postcss: 8.4.33
       postcss-modules-extract-imports: 3.0.0(postcss@8.4.33)
       postcss-modules-local-by-default: 4.0.4(postcss@8.4.33)
       postcss-modules-scope: 3.1.1(postcss@8.4.33)
       postcss-modules-values: 4.0.0(postcss@8.4.33)
       postcss-value-parser: 4.2.0
+      schema-utils: 3.3.0
       semver: 7.5.4
       webpack: 4.47.0
     dev: true
@@ -7334,6 +7336,15 @@ packages:
   /schema-utils@2.7.1:
     resolution: {integrity: sha512-SHiNtMOUGWBQJwzISiVYKu82GiV4QYGePp3odlY1tuKO7gPtphAT5R/py0fA6xtbgLL/RvtJZnU9b8s0F1q0Xg==}
     engines: {node: '>= 8.9.0'}
+    dependencies:
+      '@types/json-schema': 7.0.15
+      ajv: 6.12.6
+      ajv-keywords: 3.5.2(ajv@6.12.6)
+    dev: true
+
+  /schema-utils@3.3.0:
+    resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}
+    engines: {node: '>= 10.13.0'}
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 6.12.6
