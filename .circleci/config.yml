@@ -18,17 +18,17 @@ jobs:
           at: ~/qlik-variable-input
       - run:
           name: Install dependencies
-          command: npm install
+          command: pnpm install
       - run:
           name: Unit tests
-          command: npm run test:unit
+          command: pnpm run test:unit
       - run:
           name: Build and package
           command: |
             sudo chmod +x scripts/get-version.sh
             export VERSION=$(scripts/get-version.sh)
             echo "Version: $VERSION"
-            npm run build:zip
+            pnpm run build:zip
           environment:
             NODE_ENV: production
       - persist_to_workspace:
