@@ -1,21 +1,29 @@
 /*global define*/
-define(['qlik'], function (qlik) {
-  'use strict';
+define(["qlik"], function (qlik) {
+  "use strict";
 
   function getVariables() {
-    var variableListPromise = qlik.currApp().createGenericObject({
-      qVariableListDef: {
-        qType: 'variable'
-      }
-    }).then(function (reply) {
-      var variableList = reply.layout.qVariableList.qItems.map(function (item) {
-        return {
-          value: item.qName,
-          label: item.qName.length > 50 ? item.qName.slice(0, 50) + '...' : item.qName,
-        };
+    var variableListPromise = qlik
+      .currApp()
+      .createGenericObject({
+        qVariableListDef: {
+          qType: "variable",
+        },
+      })
+      .then(function (reply) {
+        var variableList = reply.layout.qVariableList.qItems.map(function (
+          item
+        ) {
+          return {
+            value: item.qName,
+            label:
+              item.qName.length > 50
+                ? item.qName.slice(0, 50) + "..."
+                : item.qName,
+          };
+        });
+        return variableList;
       });
-      return variableList;
-    });
     return variableListPromise;
   }
 
@@ -32,7 +40,7 @@ define(['qlik'], function (qlik) {
       layout.style,
       layout.buttonMode,
       layout.updateondrag,
-      layout.rangelabel
+      layout.rangelabel,
     ]);
   }
 
@@ -41,7 +49,7 @@ define(['qlik'], function (qlik) {
     return {
       changed: function (layout) {
         return stringify(layout) !== clone;
-      }
+      },
     };
   }
   return {
@@ -259,6 +267,22 @@ define(['qlik'], function (qlik) {
                   show: function (data) {
                     return data.render === "l";
                   },
+                },
+              },
+            },
+            presentation: {
+              type: "items",
+              grouped: false,
+              translation: "properties.presentation",
+              items: {
+                styleEditor: {
+                  component: "styling-panel",
+                  chartTitle: "Object.ActionButton",
+                  translation: "LayerStyleEditor.component.styling",
+                  subtitle: "LayerStyleEditor.component.styling",
+                  ref: "components",
+                  useGeneral: true,
+                  useBackground: true,
                 },
               },
             },
