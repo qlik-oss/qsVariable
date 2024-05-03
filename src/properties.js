@@ -277,7 +277,7 @@ define(["qlik"], function (qlik) {
               items: {
                 styleEditor: {
                   component: "styling-panel",
-                  chartTitle: "Object.ActionButton",
+                  chartTitle: "Variable input",
                   translation: "LayerStyleEditor.component.styling",
                   subtitle: "LayerStyleEditor.component.styling",
                   ref: "components",
