@@ -275,14 +275,9 @@ define(["qlik"], function (qlik) {
               grouped: false,
               translation: "properties.presentation",
               items: {
-                styleEditor: {
-                  component: "styling-panel",
+                stylingPanel: {
+                  uses: "stylingPanel",
                   chartTitle: "Variable input",
-                  translation: "LayerStyleEditor.component.styling",
-                  subtitle: "LayerStyleEditor.component.styling",
-                  ref: "components",
-                  useGeneral: true,
-                  useBackground: true,
                 },
               },
             },
