@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      PACKAGE_NAME: "@qlik/qlik-variable-input"
+    outputs:
+      version: ${{ steps.bump-version.outputs.VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "16"
+
+      - name: Bump version
+        id: bump-version
+        run: |
+          chmod +x scripts/bump-version.sh
+          chmod +x scripts/get-latest-version.sh
+          scripts/bump-version.sh ${{ github.repository_owner }} ${{ github.event.repository.name }}
+          VERSION=$(cat BUMPED_VERSION)
+          echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run eslint
+
+      - name: Build and package
+        env:
+          NODE_ENV: production
+          VERSION: ${{ steps.bump-version.outputs.VERSION }}
+        run: |
+          echo "Version: ${VERSION}"
+          npm run build:zip
+          chmod +x scripts/verify-files.sh
+          scripts/verify-files.sh
+
+      - name: Upload artifact
+        if: github.event_name == 'push' && github.ref_name == 'master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  release:
+    needs: build
+    if: github.event_name == 'push' && github.ref_name == 'master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      PACKAGE_NAME: "@qlik/qlik-variable-input"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          chmod +x scripts/create-release.sh
+          scripts/create-release.sh ${{ github.repository_owner }} ${{ github.event.repository.name }} ${PACKAGE_NAME} ${VERSION}
