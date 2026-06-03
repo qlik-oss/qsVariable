@@ -1,9 +1,9 @@
 #!/bin/bash
 set -o errexit
 
-echo "Creating release for version: $VERSION"
-echo "Artifact name: ./dist/${3}_${VERSION}.zip"
-$HOME/bin/ghr -t ${ghoauth} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} v${VERSION} "./dist/${3}_${4}.zip"
+echo "Creating release for version: $4"
+echo "Artifact name: ./dist/${3}_${4}.zip"
+gh release create "${4}" "./dist/${3}_${4}.zip" --repo "${1}/${2}"
 
 
 # Usage
